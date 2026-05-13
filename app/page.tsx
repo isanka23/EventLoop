@@ -1,9 +1,9 @@
-import React from 'react'
 import { Metadata } from 'next'
 import ExploreBtn from '@/components/ExploreBtn';
-import { title } from 'process';
 import EventCard from '@/components/EventCard';
-import { events } from '@/lib/constants';
+import { IEvent } from '@/database';
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const metadata: Metadata = {
   title: "EventLoop | Discover Developer Events",
@@ -11,7 +11,14 @@ export const metadata: Metadata = {
 };
 
 
-const Page = () => {
+const Page = async () => {
+  if (!BASE_URL) {
+    throw new Error('NEXT_PUBLIC_BASE_URL is not set');
+  }
+
+  const response = await fetch(`${BASE_URL}/api/events`);
+  const { events } = await response.json();
+
   return (
     <section className="flex w-full max-w-4xl flex-col items-center justify-center px-4 text-center">
       {/* Main Headline */}
@@ -32,17 +39,17 @@ const Page = () => {
 
       {/* Call to Action Button */}
       <ExploreBtn />
-      
+
       {/* Featured Events Section */}
       <div className="mt-20 space-y-7">
         <h3>Featured Events</h3>
 
         <ul className="events">
-            {events.map((event) => (
-                <li key={event.title} className="list-none">
-                    <EventCard {...event} />
-                </li>
-            ))}
+          {events && events.length > 0 && events.map((event: IEvent) => (
+            <li key={event.title} className="list-none">
+              <EventCard {...event} />
+            </li>
+          ))}
         </ul>
       </div>
 
@@ -51,3 +58,5 @@ const Page = () => {
 }
 
 export default Page
+
+/* 2.41.22 */

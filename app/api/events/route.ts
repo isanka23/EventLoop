@@ -19,13 +19,16 @@ export async function POST(req: Request) {
 
         const file = formData.get('image') as File;
 
-        if(!file) return NextResponse.json({message: 'image file is required'}, {status: 400});
+        if (!file) return NextResponse.json({ message: 'image file is required' }, { status: 400 });
+
+        const tags = JSON.parse((formData.get("tags") as string) ?? "[]");
+        const agenda = JSON.parse((formData.get("agenda") as string) ?? "[]");
 
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
         const uploadResult = await new Promise((resolve, reject) => {
-            cloudinary.uploader.upload_stream({resource_type: 'image', folder: 'EventLoop'}, (error, results) => {
+            cloudinary.uploader.upload_stream({ resource_type: 'image', folder: 'EventLoop' }, (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -36,7 +39,11 @@ export async function POST(req: Request) {
 
         event.image = (uploadResult as { secure_url: string }).secure_url;
 
-        const createdEvent = await Event.create(event);
+        const createdEvent = await Event.create({
+            ...event,
+            tags: tags,
+            agenda: agenda
+        });
         return NextResponse.json({ message: 'Event Created Successfully', event: createdEvent }, { status: 201 });
 
     } catch (e) {
@@ -52,8 +59,8 @@ export async function GET() {
         await connectDB();
         const events = await Event.find().sort({ createdAt: -1 });
         return NextResponse.json({ message: 'Events fetched successfully', events }, { status: 200 });
-        
+
     } catch (error) {
-        return NextResponse.json({message: 'Event Fetch failed', error: error}, {status: 500});
+        return NextResponse.json({ message: 'Event Fetch failed', error: error }, { status: 500 });
     }
 }

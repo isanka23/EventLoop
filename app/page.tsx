@@ -58,5 +58,3 @@ const Page = async () => {
 }
 
 export default Page
-
-/* 2.41.22 */

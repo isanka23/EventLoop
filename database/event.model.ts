@@ -1,3 +1,5 @@
+'use server';
+
 import { Schema, model, models, Document } from 'mongoose';
 
 export interface IEvent extends Document {

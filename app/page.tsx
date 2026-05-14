@@ -19,8 +19,18 @@ const Page = async () => {
     throw new Error('NEXT_PUBLIC_BASE_URL is not set');
   }
 
-  const response = await fetch(`${BASE_URL}/api/events`);
-  const { events } = await response.json();
+  let events = [];
+  try {
+    const response = await fetch(`${BASE_URL}/api/events`);
+    if (!response.ok) {
+      console.error('Failed to fetch events:', response.status, response.statusText);
+    } else {
+      const data = await response.json();
+      events = data.events || [];
+    }
+  } catch (error) {
+    console.error('Error fetching events:', error);
+  }
 
   return (
     <section className="flex w-full max-w-4xl flex-col items-center justify-center px-4 text-center">
@@ -44,7 +54,7 @@ const Page = async () => {
       <ExploreBtn />
 
       {/* Featured Events Section */}
-      <div className="mt-20 space-y-7">
+      <div id="events-section" className="mt-20 space-y-7">
         <h3>Featured Events</h3>
 
         <ul className="events">

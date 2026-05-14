@@ -1,3 +1,5 @@
+'use server';
+
 import { Schema, model, models, Document, Types } from 'mongoose';
 import Event from './event.model';
 

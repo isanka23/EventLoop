@@ -2,7 +2,6 @@ import { Metadata } from 'next'
 import ExploreBtn from '@/components/ExploreBtn';
 import EventCard from '@/components/EventCard';
 import { IEvent } from '@/database';
-import { cacheLife } from 'next/cache';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -11,10 +10,10 @@ export const metadata: Metadata = {
   description: "The ultimate hub for developers to find hackathons, tech conferences, and local meetups.",
 };
 
+export const dynamic = 'force-dynamic';
+
 
 const Page = async () => {
-  'use cache';
-  cacheLife('hours')
   if (!BASE_URL) {
     throw new Error('NEXT_PUBLIC_BASE_URL is not set');
   }

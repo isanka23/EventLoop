@@ -2,8 +2,9 @@ import BookEvents from "@/components/bookEvents";
 import EventCard from "@/components/EventCard";
 import { IEvent } from "@/database";
 import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
-import { cacheLife } from "next/cache";
 import { notFound } from "next/navigation";
+
+export const dynamic = 'force-dynamic'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -13,7 +14,6 @@ const EventDetailItem = ({ icon, alt, label }: { icon: string, alt: string, labe
         <p>{label}</p>
     </div>
 )
-
 
 const EventAgenda = ({ agendaItems }: { agendaItems: string[] }) => (
     <div className="agenda">
@@ -26,7 +26,6 @@ const EventAgenda = ({ agendaItems }: { agendaItems: string[] }) => (
     </div>
 )
 
-
 const EventTags = ({ tags }: { tags: string[] }) => (
     <div className="flex flex-row gap-1.5 flex-wrap">
         {tags.map((tag) => (
@@ -36,8 +35,6 @@ const EventTags = ({ tags }: { tags: string[] }) => (
 )
 
 const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
-    'use cache'
-    cacheLife('hours');
     const { slug } = await params;
     const request = await fetch(`${BASE_URL}/api/events/${slug}`);
     const { event: { _id, description, image, overview, date, time, location, mode, agenda, audience, tags, organizer } } = await request.json();
@@ -83,15 +80,17 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }> 
                     </section>
 
                     <EventTags tags={tags} />
-
                 </div>
 
-                {/* right side - Booking form*/}
+                {/* right side - Booking form */}
                 <aside className="booking">
-                    <div className="signup=card">
+                    <div className="signup-card">
                         <h2>Book Your Spot</h2>
-                        {bookings > 0 ? (<p>There are {bookings} spots available!</p>) : (<p>Sorry, this event is fully booked.</p>)}
-
+                        {bookings > 0 ? (
+                            <p>There are {bookings} spots available!</p>
+                        ) : (
+                            <p>Sorry, this event is fully booked.</p>
+                        )}
                         <BookEvents eventId={_id} slug={slug} />
                     </div>
                 </aside>
